@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
-import RNMapView from 'react-native-maps';
+import { View, StyleSheet, Platform } from 'react-native';
+import RNMapView, { UrlTile } from 'react-native-maps';
 import { getCurrentLocation } from '../services/location';
 
 const DEFAULT_REGION = {
@@ -32,9 +32,16 @@ export default function MapViewScreen() {
       <RNMapView
         style={styles.map}
         initialRegion={region}
+        mapType="none"
         showsUserLocation
         showsMyLocationButton
-      />
+      >
+        <UrlTile
+          urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          maximumZ={19}
+          flipY={false}
+        />
+      </RNMapView>
     </View>
   );
 }

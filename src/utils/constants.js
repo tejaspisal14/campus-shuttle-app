@@ -29,6 +29,17 @@ export const FONT_SIZES = {
   xl: 24,
 };
 
+// Route types for shuttle markers
+export const ROUTE_TYPES = {
+  REGULAR: 'regular',
+  MENS_HOSTEL: 'mens_hostel',
+};
+
+export const ROUTE_COLORS = {
+  [ROUTE_TYPES.REGULAR]: '#48bb78',
+  [ROUTE_TYPES.MENS_HOSTEL]: '#ed8936',
+};
+
 // Supabase - Replace with your project credentials
 export const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://your-project.supabase.co';
 export const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'your-anon-key';

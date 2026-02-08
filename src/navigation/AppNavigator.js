@@ -5,7 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text, View, ActivityIndicator } from 'react-native';
 
 import AuthScreen from '../screens/AuthScreen';
-import StudentHome from '../screens/StudentHome';
+import StudentHomeScreen from '../screens/StudentHomeScreen';
 import DriverHome from '../screens/DriverHome';
 import RideActive from '../screens/RideActive';
 import MapViewScreen from '../screens/MapView';
@@ -35,7 +35,7 @@ function MainTabs({ route }) {
     >
       <Tab.Screen
         name="Student"
-        component={StudentHome}
+        component={StudentHomeScreen}
         options={{ tabBarLabel: 'Student', tabBarIcon: () => <Text>🚌</Text> }}
       />
       <Tab.Screen

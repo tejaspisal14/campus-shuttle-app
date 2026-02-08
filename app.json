@@ -15,9 +15,6 @@
     },
     "ios": {
       "supportsTablet": true,
-      "config": {
-        "googleMapsApiKey": ""
-      },
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "This app needs location access to track campus shuttle rides.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "This app needs location access to track campus shuttle rides."
@@ -29,11 +26,6 @@
         "backgroundColor": "#667eea"
       },
       "edgeToEdgeEnabled": true,
-      "config": {
-        "googleMaps": {
-          "apiKey": ""
-        }
-      },
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION"

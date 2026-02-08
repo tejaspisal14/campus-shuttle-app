@@ -121,3 +121,114 @@ export async function getUserProfile(userId) {
   if (error) throw error;
   return data;
 }
+
+// --- Shuttle & Ride Services ---
+
+/**
+ * Fetch all active shuttles
+ */
+export async function getActiveShuttles() {
+  const { data, error } = await supabase
+    .from('shuttles')
+    .select('*')
+    .eq('is_active', true);
+
+  if (error) throw error;
+  return data || [];
+}
+
+/**
+ * Subscribe to real-time shuttle updates (location, occupancy)
+ */
+export function subscribeToShuttles(callback) {
+  const channel = supabase
+    .channel('shuttles-changes')
+    .on(
+      'postgres_changes',
+      { event: '*', schema: 'public', table: 'shuttles' },
+      (payload) => callback(payload)
+    )
+    .subscribe();
+
+  return () => supabase.removeChannel(channel);
+}
+
+/**
+ * Subscribe to active shuttles with initial fetch + real-time
+ */
+export async function getActiveShuttlesWithRealtime(callback) {
+  try {
+    const shuttles = await getActiveShuttles();
+    callback(shuttles?.length ? shuttles : []);
+  } catch {
+    callback([]);
+  }
+
+  return subscribeToShuttles(async () => {
+    try {
+      const updated = await getActiveShuttles();
+      callback(updated?.length ? updated : []);
+    } catch {
+      callback([]);
+    }
+  });
+}
+
+/**
+ * Start a ride - create ride entry when student boards with vehicle 4-digit
+ */
+export async function startRide(studentId, vehicle4digit) {
+  const { data, error } = await supabase
+    .from('rides')
+    .insert({
+      student_id: studentId,
+      vehicle_code: String(vehicle4digit).padStart(4, '0'),
+      status: 'active',
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * Get student's active ride
+ */
+export async function getStudentActiveRide(studentId) {
+  const { data, error } = await supabase
+    .from('rides')
+    .select('*, shuttles(*)')
+    .eq('student_id', studentId)
+    .eq('status', 'active')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * Subscribe to ride updates for a student
+ */
+export function subscribeToStudentRide(studentId, callback) {
+  const channel = supabase
+    .channel(`rides-${studentId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'rides',
+        filter: `student_id=eq.${studentId}`,
+      },
+      async () => {
+        const ride = await getStudentActiveRide(studentId);
+        callback(ride);
+      }
+    )
+    .subscribe();
+
+  return () => supabase.removeChannel(channel);
+}
